@@ -4,8 +4,7 @@ import time
 import pygame as pg
 import numpy as np
 
-
-pg.init()
+pg.display.init()
 pg.display.set_caption('MoviePy')
 
 def imdisplay(imarray, screen=None):
