@@ -110,11 +110,15 @@ class FFMPEG_VideoReader:
 
     def read_frame(self):
         w, h = self.size
-        nbytes= self.depth*w*h
+        nbytes = self.depth*w*h
         try:
             # Normally, the reader should not read after the last frame.
             # if it does, raise an error.
-            s = self.proc.stdout.read(nbytes)
+
+            s = ''
+            while len(s) < nbytes:
+                s += self.proc.stdout.read(nbytes-len(s))
+
             assert len(s) == nbytes
             result = np.fromstring(s,
                              dtype='uint8').reshape((h, w, len(s)//(w*h)))
