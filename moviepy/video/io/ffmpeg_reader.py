@@ -35,9 +35,9 @@ class FFMPEG_VideoReader:
 
     def initialize(self, starttime=0):
         """Opens the file, creates the pipe. """
-        
+
         self.close() # if any
-        
+
         if starttime !=0 :
             offset = min(1,starttime)
             i_arg = ['-ss', "%.03f" % (starttime - offset),
@@ -45,26 +45,26 @@ class FFMPEG_VideoReader:
                     '-ss', "%.03f" % offset]
         else:
             i_arg = [ '-i', self.filename]
-        
-        
+
+
         cmd = ([FFMPEG_BINARY]+ i_arg +
-                ['-loglevel', 'error', 
+                ['-loglevel', 'error',
                 '-f', 'image2pipe',
                 "-pix_fmt", self.pix_fmt,
                 '-vcodec', 'rawvideo', '-'])
-        
-        
+
+
         self.proc = sp.Popen(cmd, bufsize= self.bufsize,
                                    stdout=sp.PIPE,
                                    stderr=sp.PIPE)
-                                   
-    
+
+
     def load_infos(self, print_infos=False):
         """Get file infos using ffmpeg.
-        
+
         Grabs the FFMPEG info on the file and use them to set the
         attributes ``self.size`` and ``self.fps`` """
-            
+
         # open the file in a pipe, provoke an error, read output
         proc = sp.Popen([FFMPEG_BINARY, "-i", self.filename, "-"],
                 bufsize=10**6,
@@ -119,9 +119,9 @@ class FFMPEG_VideoReader:
             result = np.fromstring(s,
                              dtype='uint8').reshape((h, w, len(s)//(w*h)))
             #self.proc.stdout.flush()
-            
+
         except IOError:
-            
+
             self.proc.terminate()
             serr = self.proc.stderr.read()
             print( "error: string: %s, stderr: %s" % (s, serr))
@@ -133,7 +133,7 @@ class FFMPEG_VideoReader:
 
     def get_frame(self, t):
         """ Read a file video frame at time t.
-        
+
         Note for coders: getting an arbitrary frame in the video with
         ffmpeg can be painfully slow if some decoding has to be done.
         This function tries to avoid fectching arbitrary frames whenever
@@ -155,36 +155,36 @@ class FFMPEG_VideoReader:
             result = self.read_frame()
             self.pos = pos
             return result
-    
+
     def close(self):
         if self.proc is not None:
             self.proc.terminate()
             self.proc.stdout.close()
             self.proc.stderr.close()
             del self.proc
-    
+
     def __del__(self):
         self.close()
         del self.lastread
-    
+
 
 
 def ffmpeg_read_image(filename, with_mask=True):
     """ Read one image from a file.
-    
+
     Wraps FFMPEG_Videoreader to read just one image. Returns an
     ImageClip.
-    
+
     Parameters
     -----------
-    
+
     filename
       Name of the image file. Can be of any format supported by ffmpeg.
-    
+
     with_mask
       If the image has a transparency layer, ``with_mask=true`` will save
       this layer as the mask of the returned ImageClip
-    
+
     """
     if with_mask:
         pix_fmt = 'rgba'
