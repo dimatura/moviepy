@@ -5,10 +5,6 @@ from moviepy.decorators import requires_duration
 
 import pygame as pg
 
-pg.init()
-pg.display.set_caption('MoviePy')
-
-
 @requires_duration
 def preview(clip, fps=22050,  buffersize=4000, nbytes= 2,
                  audioFlag=None, videoFlag=None):
